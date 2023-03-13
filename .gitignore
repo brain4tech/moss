@@ -45,3 +45,6 @@ package-lock.json
 .code
 .idea
 .fleet
+
+# environment variables
+*.env
