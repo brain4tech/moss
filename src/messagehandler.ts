@@ -3,7 +3,7 @@ import {MessageSchema} from "./definitions"
 
 export {MessageHandler}
 
-class MessageHandler{
+class MessageHandler {
 
     private smartphoneConnections: Map<string, ElysiaWS>
     private masterConnection: ElysiaWS | null
@@ -13,7 +13,7 @@ class MessageHandler{
 
     private connectionOfferType: string
 
-    constructor(){
+    constructor() {
         this.smartphoneConnections = new Map<string, ElysiaWS>()
         this.masterConnection = null
         this.masterConnectionId = null
@@ -31,7 +31,7 @@ class MessageHandler{
     handleMessage(ws: ElysiaWS, id: string, message: MessageSchema): void {
         console.log(`${id}:`, message)
 
-        switch (message.type){
+        switch (message.type) {
             case 'ping':
                 ws.send(this.response("pong"))
                 break
@@ -55,7 +55,7 @@ class MessageHandler{
                 this.masterConnectionSDP = message.payload.sdp
 
                 // notify all connections of new master sdp
-                this.smartphoneConnections.forEach( (ws, id) => {
+                this.smartphoneConnections.forEach((ws, id) => {
                     ws.send(this.response(this.connectionOfferType, this.masterConnectionSDP))
                 })
 
@@ -65,8 +65,8 @@ class MessageHandler{
             default:
                 if (!this.masterConnection || !this.masterConnectionId || !this.masterConnectionSDP) return
 
-                if (id === this.masterConnectionId){
-                    
+                if (id === this.masterConnectionId) {
+
                     const receiverId = message.id
                     if (!receiverId) return
 
@@ -80,7 +80,7 @@ class MessageHandler{
                 if (!this.smartphoneConnections.has(id)) return
 
                 this.masterConnection.send(this.response(message.type, message.payload, id))
-                break            
+                break
         }
 
         return
@@ -91,8 +91,8 @@ class MessageHandler{
         if (validConnection) console.log(`${id} disconnected.`)
     }
 
-    response(type: string, payload: any = "", id?: string): MessageSchema{
-        
+    response(type: string, payload: any = "", id?: string): MessageSchema {
+
         let returnObject: MessageSchema = {
             type: type,
             payload: payload
