@@ -39,9 +39,11 @@ const app = new Elysia()
         }
     })
 
-
+/**
+ * Start the application.
+ */
 app.listen({
-            hostname: Env.getHostname(),
-            port: Env.getPort()
-        })
+    hostname: Env.getHostname(),
+    port: Env.getPort()
+})
 console.log(`🟢 moss running on ${app.server?.hostname}:${app.server?.port}`)

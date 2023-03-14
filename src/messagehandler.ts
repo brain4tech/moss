@@ -4,13 +4,34 @@ import {Env} from "./utils"
 
 export {MessageHandler}
 
+/**
+ * Class to handle incoming websocket messages.
+ */
 class MessageHandler {
 
+    /**
+     * Mapping of connection ids to their corresponding websocket instances.
+     */
     private smartphoneConnections: Map<string, ElysiaWS>
+
+    /**
+     * Reference to master websocket instance.
+     */
     private masterConnection: ElysiaWS | null
+
+    /**
+     * If of master connection.
+     */
     private masterConnectionId: string | null
+
+    /**
+     * WebRTC SDP of master connection.
+     */
     private masterConnectionSDP: object | null
 
+    /**
+     * Instantiates class.
+     */
     constructor() {
         this.smartphoneConnections = new Map<string, ElysiaWS>()
         this.masterConnection = null
@@ -20,6 +41,13 @@ class MessageHandler {
         Env.reevaluate()
     }
 
+    /**
+     * Handle an incoming message.
+     * @param ws Websocket instance.
+     * @param id Connection identifier.
+     * @param message Send message by client.
+     * @returns void
+     */
     handleMessage(ws: ElysiaWS, id: string, message: MessageSchema): void {
         console.log(`${id}:`, message)
 
@@ -38,7 +66,7 @@ class MessageHandler {
                 // payload includes 'spd' and 'secret'
                 if (!message.payload['sdp'] || !message.payload['secret']) return
                 if (Env.connectionSecret !== message.payload.secret) return
-                
+
                 // prevent same endpoint to set master multiple times
                 if (id === this.masterConnectionId) return
 
@@ -78,12 +106,23 @@ class MessageHandler {
         return
     }
 
+    /**
+     * Handle a client disconnection.
+     * @param id Identifier of disconnected client.
+     */
     handleDisconnect(id: string): void {
         const validConnection = this.smartphoneConnections.delete(id)
         if (validConnection) console.log(`${id} disconnected.`)
     }
 
-    response(type: string, payload: any = "", id?: string): MessageSchema {
+    /**
+     * Generate a response object.
+     * @param type Packet type.
+     * @param payload Packet payload.
+     * @param id Sender or recipient identifier.
+     * @returns Object of type MessageSchema.
+     */
+    private response(type: string, payload: any = "", id?: string): MessageSchema {
 
         let returnObject: MessageSchema = {
             type: type,
@@ -94,5 +133,4 @@ class MessageHandler {
 
         return returnObject
     }
-
 }

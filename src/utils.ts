@@ -1,5 +1,8 @@
 export {Env}
 
+/**
+ * Class to read and analyse environment variables.
+ */
 class Env {
     public static hostname: string
     public static port: number
@@ -72,7 +75,7 @@ class Env {
 function getFromEnv(name: string, other?: string): string {
     let env: string | undefined = Bun.env[name]
 
-    if(env === undefined){
+    if (env === undefined) {
         if (other === undefined) throw Error(`Environment variable '${name}' not set.`)
         return other
     }

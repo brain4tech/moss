@@ -13,7 +13,7 @@
 
 It's ...
 - **fast** and **lightweight** by using [bun](https://bun.sh/) as its javascript runtime, [ElysiaJS](https://elysiajs.com/) as the [fastest web framework](https://github.com/SaltyAom/bun-http-framework-benchmark) currently available
-- **small**, the project only focusses on being what's intended to be
+- **small**, the project only focuses on being what's intended to be
 - **easy-to-use** and **straight-forward**, because we don't like complicated APIs
 
 ## Usage
@@ -95,7 +95,7 @@ Some future ideas:
 - reference implementation and usage
 
 ## WebRTC and Signaling
-The protocol of [WebRTC](https://webrtc.org/) requires a reachable signaling server so two clients can find each other and exchange required objects. However, the signaling server is kept as a blackbox. This is because it dependends on the application and use case of WebRTC which protocol and behaviour the signaling server should have.
+The protocol of [WebRTC](https://webrtc.org/) requires a reachable signaling server so two clients can find each other and exchange required objects. However, the signaling server is kept as a blackbox. This is because it depends on the application and use case of WebRTC which protocol and behaviour the signaling server should have.
 
 In this case, every client should be connected and send data to one central instance. The signaling server acts like a proxy that redirects all client messages to the central server by attaching an origin. Every message from the central server includes an addressee the message gets forwarded to.
 
@@ -117,7 +117,7 @@ Central instance - *moss*:
 {
   "type": "<packet-type>",
   "payload": "<any>",
-  "id": "<sender/receipient id>".
+  "id": "<sender/recipient id>"
 }
 ```
 
@@ -138,7 +138,7 @@ Change hostname *moss* starts on. *0.0.0.0* by default.
 Change port *moss* starts on. *8080* by default.
 
 ### Reserved packet types
-In general, all packets are simply forwarded towards it's destination. However, there are three reserved packet types:
+In general, all packets are simply forwarded towards its destination. However, there are three reserved packet types:
 
 
 #### `ping`
@@ -184,7 +184,7 @@ In general, all packets are simply forwarded towards it's destination. However, 
 }
 ```
 - `<connection-secret>`: Contents of `MOSS_CONNECTION_SECRET` environment variable. This tells *moss* that this connection is authorized to receive all client messages
-- `sdp` key should contain the central instance' WebRTC SDP object, so clients can connect to it
+- `sdp` key should contain the central instances' WebRTC SDP object, so clients can connect to it
 
 ---
 
@@ -207,7 +207,7 @@ In general, all packets are simply forwarded towards it's destination. However, 
 }
 ```
 - `<offer-type>`: Contents of `MOSS_CONNECTION_OFFER_TYPE` environment variable. This is the packet that tells the client that the server wants to establish a WebRTC connection
-- if no central instance is present yet, no offer is send as well
+- if no central instance is present yet, no offer is sent as well
 - a client should always be ready to receive a connection offer and migrate to it
 - payload contains master SDP object
 
@@ -221,4 +221,4 @@ I am working on a bigger research project where this kind of niche implementatio
 Fast development speed, fast execution speed, web programming languages are perfect when using web technologies.
 
 <h3>Dude, why is the code so bad? Are you a beginner?</h3>
-Yes, but also no. I have ~8 years experience in coding, but using Typescript is new for me. Please have mercy and feel free to educate me on best practices and coding standarts :-)
+Yes, but also no. I have ~8 years experience in coding, but using Typescript is new for me. Please have mercy and feel free to educate me on best practices and coding standards :-)
