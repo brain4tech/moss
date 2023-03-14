@@ -40,3 +40,14 @@ yarn-error.log*
 **/*.log
 package-lock.json
 **/*.bun
+
+# development environments
+.code
+.idea
+.fleet
+
+# environment variables
+*.env
+
+# docker-compose
+docker-compose.yaml
