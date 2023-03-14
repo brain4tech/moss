@@ -1,5 +1,6 @@
 import {ElysiaWS} from "@elysiajs/websocket"
 import {MessageSchema} from "./definitions"
+import {Env} from "./utils"
 
 export {MessageHandler}
 
@@ -9,9 +10,6 @@ class MessageHandler {
     private masterConnection: ElysiaWS | null
     private masterConnectionId: string | null
     private masterConnectionSDP: object | null
-    private masterConnectionSecret: string
-
-    private connectionOfferType: string
 
     constructor() {
         this.smartphoneConnections = new Map<string, ElysiaWS>()
@@ -19,13 +17,7 @@ class MessageHandler {
         this.masterConnectionId = null
         this.masterConnectionSDP = null
 
-        const masterConnectionSecretEnv = Bun.env['MOSS_CONNECTION_SECRET']
-        if (masterConnectionSecretEnv === undefined) throw Error("'MOSS_CONNECTION_SECRET' environment variable unset.")
-        this.masterConnectionSecret = masterConnectionSecretEnv
-
-        const connectionOfferTypeEnv = Bun.env['MOSS_CONNECTION_OFFER_TYPE']
-        if (connectionOfferTypeEnv === undefined) throw Error("'MOSS_CONNECTION_OFFER_TYPE' environment variable unset.")
-        this.connectionOfferType = connectionOfferTypeEnv
+        Env.reevaluate()
     }
 
     handleMessage(ws: ElysiaWS, id: string, message: MessageSchema): void {
@@ -40,13 +32,13 @@ class MessageHandler {
                 if (!this.masterConnection || !this.masterConnectionId || !this.masterConnectionSDP) return
 
                 // send connection offer with sdp from server
-                ws.send(this.response(this.connectionOfferType, this.masterConnectionSDP))
+                ws.send(this.response(Env.connectionOfferType, this.masterConnectionSDP))
                 break
             case 'set-master':
                 // payload includes 'spd' and 'secret'
                 if (!message.payload['sdp'] || !message.payload['secret']) return
-                if (this.masterConnectionSecret !== message.payload.secret) return
-
+                if (Env.connectionSecret !== message.payload.secret) return
+                
                 // prevent same endpoint to set master multiple times
                 if (id === this.masterConnectionId) return
 
@@ -56,7 +48,7 @@ class MessageHandler {
 
                 // notify all connections of new master sdp
                 this.smartphoneConnections.forEach((ws, id) => {
-                    ws.send(this.response(this.connectionOfferType, this.masterConnectionSDP))
+                    ws.send(this.response(Env.connectionOfferType, this.masterConnectionSDP))
                 })
 
                 // confirm new master

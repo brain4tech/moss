@@ -1,9 +1,16 @@
 import Elysia, {t} from 'elysia'
 import {websocket} from '@elysiajs/websocket'
 import {MessageHandler} from './messagehandler'
+import {Env} from './utils'
 
+/**
+ * Instantiate message handler class.
+ */
 const messageHandler = new MessageHandler()
 
+/**
+ * Define app behaviour.
+ */
 const app = new Elysia()
     .use(websocket())
     .ws('/', {
@@ -32,5 +39,9 @@ const app = new Elysia()
         }
     })
 
-app.listen(3000)
+
+app.listen({
+            hostname: Env.getHostname(),
+            port: Env.getPort()
+        })
 console.log(`🟢 moss running on ${app.server?.hostname}:${app.server?.port}`)
