@@ -9,7 +9,7 @@
 
 </div>
 
-*moss* (acronym for **M**any-to-**O**ne **S**ignaling **S**erver) is a small, websocket-based signaling server. It behaves like a proxy from many clients to one central server/manager, based on unique ids per connection. It uses WebSockets and a JSON-based protocol.
+*moss* (acronym for **M**any-to-**O**ne **S**ignaling **S**erver) is a small, WebSocket-based signaling server for [WebRTC](https://webrtc.org/). It behaves like a proxy from many clients to one central server/manager, based on unique ids per connection.
 
 It's ...
 - **fast** and **lightweight** by using [bun](https://bun.sh/) as its javascript runtime, [ElysiaJS](https://elysiajs.com/) as the [fastest web framework](https://github.com/SaltyAom/bun-http-framework-benchmark) currently available
