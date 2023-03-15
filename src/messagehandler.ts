@@ -25,18 +25,12 @@ class MessageHandler {
     private masterConnectionId: string | null
 
     /**
-     * WebRTC SDP of master connection.
-     */
-    private masterConnectionSDP: object | null
-
-    /**
      * Instantiates class.
      */
     constructor() {
         this.smartphoneConnections = new Map<string, ElysiaWS>()
         this.masterConnection = null
         this.masterConnectionId = null
-        this.masterConnectionSDP = null
 
         Env.reevaluate()
     }
@@ -52,38 +46,39 @@ class MessageHandler {
         console.log(`${id}:`, message)
 
         switch (message.type) {
-            case 'ping':
-                ws.send(this.response("pong"))
+            case 'moss-ping':
+                ws.send(this.response("moss-pong", `Hello <${id}>, I'm moss.`))
                 break
-            case 'login':
+
+            case 'moss-login':
                 this.smartphoneConnections.set(id, ws)
-                if (!this.masterConnection || !this.masterConnectionId || !this.masterConnectionSDP) return
+                if (!this.masterConnection || !this.masterConnectionId) return
+                if (id === this.masterConnectionId) return
 
                 // send connection offer with sdp from server
-                ws.send(this.response(Env.connectionOfferType, this.masterConnectionSDP))
+                ws.send(this.response(Env.connectionStartType))
                 break
-            case 'set-master':
-                // payload includes 'spd' and 'secret'
-                if (!message.payload['sdp'] || !message.payload['secret']) return
-                if (Env.connectionSecret !== message.payload.secret) return
+
+            case 'moss-set-master':
+                if (Env.connectionSecret !== message.payload['secret']) return
 
                 // prevent same endpoint to set master multiple times
                 if (id === this.masterConnectionId) return
 
                 this.masterConnection = ws
                 this.masterConnectionId = id
-                this.masterConnectionSDP = message.payload.sdp
 
                 // notify all connections of new master sdp
-                this.smartphoneConnections.forEach((ws, id) => {
-                    ws.send(this.response(Env.connectionOfferType, this.masterConnectionSDP))
+                this.smartphoneConnections.forEach((ws) => {
+                    ws.send(this.response(Env.connectionStartType))
                 })
 
                 // confirm new master
-                this.masterConnection.send(this.response('master-confirmation'))
+                this.masterConnection.send(this.response('moss-master-confirmation'))
                 break
+            
             default:
-                if (!this.masterConnection || !this.masterConnectionId || !this.masterConnectionSDP) return
+                if (!this.masterConnection || !this.masterConnectionId) return
 
                 if (id === this.masterConnectionId) {
 
@@ -111,6 +106,13 @@ class MessageHandler {
      * @param id Identifier of disconnected client.
      */
     handleDisconnect(id: string): void {
+
+        if (id === this.masterConnectionId) {
+            this.masterConnection = null
+            this.masterConnectionId = null
+            console.log("master connection closed.")
+        }
+
         const validConnection = this.smartphoneConnections.delete(id)
         if (validConnection) console.log(`${id} disconnected.`)
     }
