@@ -66,7 +66,6 @@ docker compose up -d
 and the container should be build and executed automagically. In case you modified the port number in the `.env` file, you also need to update the inner port within the `docker-compose.yaml`.
 
 
-
 <h3>Final notice</h3>
 
 *moss* is originally designed to be executed within a local network environment. Although it may work when deployed on the www, it is neither tested nor supported.
@@ -80,9 +79,9 @@ and the container should be build and executed automagically. In case you modifi
   - [General information](#general-information)
   - [Environment variables](#environment-variables)
   - [Reserved packet types](#reserved-packet-types)
-    - [`ping`](#ping)
-    - [`set-master` (master only)](#set-master-master-only)
-    - [`login` (client only)](#login-client-only)
+    - [`moss-ping`](#moss-ping)
+    - [`moss-set-master` (master only)](#moss-set-master-master-only)
+    - [`moss-login` (client only)](#moss-login-client-only)
 - [FAQ](#faq)
 
 ## Missing features and ToDo's
@@ -128,8 +127,8 @@ Rename `template.env` to `.env` and add the values behind the respective keys:
 - **`MOSS_CONNECTION_SECRET`** (required)<br>
 Secret required to set a connection to as master and redirect all messages to this connection.
 
-- **`MOSS_CONNECTION_OFFER_TYPE`** (required)<br>
-Content for `type` key send back from *moss* on a connection login (i.e. WebRTC sdp offer).
+- **`MOSS_CONNECTION_START_TYPE`** (required)<br>
+Content for `type` key send back from *moss* on a connection login (i.e. client can initiate peer connection).
 
 - **`MOSS_HOSTNAME`**<br>
 Change hostname *moss* starts on. *0.0.0.0* by default.
@@ -141,13 +140,13 @@ Change port *moss* starts on. *8080* by default.
 In general, all packets are simply forwarded towards its destination. However, there are three reserved packet types:
 
 
-#### `ping`
+#### `moss-ping`
 *Check service availability.*
 
 **Expects:**
 ```json
 {
-  "type": "ping",
+  "type": "moss-ping",
   "payload": ""
 }
 ```
@@ -155,22 +154,21 @@ In general, all packets are simply forwarded towards its destination. However, t
 **Returns:**
 ```json
 {
-  "type": "pong",
-  "payload": ""
+  "type": "moss-pong",
+  "payload": "Hello <your-id>, I'm moss."
 }
 ```
 
 ---
 
-#### `set-master` (master only)
+#### `moss-set-master` (master only)
 *Set a new master connection.*
 
 **Expects:**
 ```json
 {
-  "type": "set-master",
+  "type": "moss-set-master",
   "payload": {
-    "sdp": {},
     "secret": "<connection-secret>"
   }
 }
@@ -179,22 +177,21 @@ In general, all packets are simply forwarded towards its destination. However, t
 **Returns:**
 ```json
 {
-  "type": "master-confirmation",
+  "type": "moss-master-confirmation",
   "payload": ""
 }
 ```
 - `<connection-secret>`: Contents of `MOSS_CONNECTION_SECRET` environment variable. This tells *moss* that this connection is authorized to receive all client messages
-- `sdp` key should contain the central instances' WebRTC SDP object, so clients can connect to it
 
 ---
 
-#### `login` (client only)
+#### `moss-login` (client only)
 *Client is ready to receive.*
 
 **Expects:**
 ```json
 {
-  "type": "login",
+  "type": "moss-login",
   "payload": ""
 }
 ```
@@ -203,13 +200,12 @@ In general, all packets are simply forwarded towards its destination. However, t
 ```json
 {
   "type": "<offer-type>",
-  "payload": {}
+  "payload": ""
 }
 ```
-- `<offer-type>`: Contents of `MOSS_CONNECTION_OFFER_TYPE` environment variable. This is the packet that tells the client that the server wants to establish a WebRTC connection
-- if no central instance is present yet, no offer is sent as well
+- `<offer-type>`: Contents of `MOSS_CONNECTION_START_TYPE` environment variable. This is the packet that tells the client that the server wants to establish a WebRTC connection
+- if no central instance is present yet, no connection start is sent
 - a client should always be ready to receive a connection offer and migrate to it
-- payload contains master SDP object
 
 
 ## FAQ

@@ -7,7 +7,7 @@ class Env {
     public static hostname: string
     public static port: number
     public static connectionSecret: string
-    public static connectionOfferType: string
+    public static connectionStartType: string
 
     /**
      * Reevaluate all environment variables.
@@ -16,7 +16,7 @@ class Env {
         Env.hostname = this.getHostname()
         Env.port = this.getPort()
         Env.connectionSecret = this.getConnectionSecret()
-        Env.connectionOfferType = this.getConnectionOfferType()
+        Env.connectionStartType = this.getConnectionStartType()
     }
 
     /**
@@ -28,7 +28,7 @@ class Env {
             hostname: Env.hostname,
             port: Env.port,
             connectionSecret: Env.connectionSecret,
-            connectionOfferType: Env.connectionOfferType
+            startConnectionType: Env.connectionStartType
         }
     }
 
@@ -58,11 +58,11 @@ class Env {
     }
 
     /**
-     * Read connection offer type from environment variables.
+     * Read start connection type from environment variables.
      * @returns Offer type.
      */
-    static getConnectionOfferType(): string {
-        return getFromEnv('MOSS_CONNECTION_OFFER_TYPE')
+    static getConnectionStartType(): string {
+        return getFromEnv('MOSS_CONNECTION_START_TYPE')
     }
 }
 
