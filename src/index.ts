@@ -1,5 +1,4 @@
-import Elysia, {t} from 'elysia'
-import {websocket} from '@elysiajs/websocket'
+import { Elysia, ws, t } from 'elysia'
 import {MessageHandler} from './messagehandler'
 import {Env} from './utils'
 
@@ -11,8 +10,8 @@ const messageHandler = new MessageHandler()
 /**
  * Define app behaviour.
  */
-const app = new Elysia()
-    .use(websocket())
+const app: Elysia = new Elysia()
+    .use(ws())
     .ws('/', {
 
         schema: {
@@ -31,11 +30,11 @@ const app = new Elysia()
         },
 
         message(ws, message) {
-            messageHandler.handleMessage(ws, ws.data.id, message)
+            messageHandler.handleMessage(ws, String(ws.data.id), message)
         },
 
         close(ws) {
-            messageHandler.handleDisconnect(ws.data.id)
+            messageHandler.handleDisconnect(String(ws.data.id))
         }
     })
 
