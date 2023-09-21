@@ -51,3 +51,6 @@ package-lock.json
 
 # docker-compose
 docker-compose.yaml
+
+# server certificats
+certificate

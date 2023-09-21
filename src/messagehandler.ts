@@ -1,6 +1,8 @@
-import {ElysiaWS} from "@elysiajs/websocket"
 import {MessageSchema} from "./definitions"
 import {Env} from "./utils"
+import {Context} from "elysia";
+import {randomUUID} from "crypto";
+import {ServerWebSocket} from "bun";
 
 export {MessageHandler}
 
@@ -12,12 +14,12 @@ class MessageHandler {
     /**
      * Mapping of connection ids to their corresponding websocket instances.
      */
-    private smartphoneConnections: Map<string, ElysiaWS>
+    private smartphoneConnections: Map<string, ServerWebSocket>
 
     /**
      * Reference to master websocket instance.
      */
-    private masterConnection: ElysiaWS | null
+    private masterConnection: ServerWebSocket | null
 
     /**
      * If of master connection.
@@ -28,7 +30,7 @@ class MessageHandler {
      * Instantiates class.
      */
     constructor() {
-        this.smartphoneConnections = new Map<string, ElysiaWS>()
+        this.smartphoneConnections = new Map<string, ServerWebSocket>()
         this.masterConnection = null
         this.masterConnectionId = null
 
@@ -42,7 +44,12 @@ class MessageHandler {
      * @param message Send message by client.
      * @returns void
      */
-    handleMessage(ws: ElysiaWS, id: string, message: MessageSchema): void {
+    handleMessage(ws: ServerWebSocket<{ id: string; data: Context }>, message: MessageSchema): void {
+
+        // give websocket custom id because the native stuff doesn't work SHIT
+        ws.data.id = randomUUID()
+        const id: string = ws.data.id
+
         console.log(`${id}:`, message)
 
         switch (message.type) {
@@ -103,9 +110,11 @@ class MessageHandler {
 
     /**
      * Handle a client disconnection.
-     * @param id Identifier of disconnected client.
+     * @param ws Websocket instance.
      */
-    handleDisconnect(id: string): void {
+    handleDisconnect(ws: ServerWebSocket<{ id: string; data: Context }>): void {
+
+        const id = ws.data.id
 
         if (id === this.masterConnectionId) {
             this.masterConnection = null

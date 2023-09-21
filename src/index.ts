@@ -1,4 +1,4 @@
-import { Elysia, ws, t } from 'elysia'
+import {Context, Elysia, t} from 'elysia'
 import {MessageHandler} from './messagehandler'
 import {Env} from './utils'
 
@@ -10,8 +10,7 @@ const messageHandler = new MessageHandler()
 /**
  * Define app behaviour.
  */
-const app: Elysia = new Elysia()
-    .use(ws())
+const app = new Elysia()
     .ws('/', {
 
         schema: {
@@ -22,6 +21,7 @@ const app: Elysia = new Elysia()
                 id: t.Optional(t.String())
             }),
 
+            // validate outgoing message
             response: t.Object({
                 type: t.String(),
                 payload: t.Any(),
@@ -30,11 +30,11 @@ const app: Elysia = new Elysia()
         },
 
         message(ws, message) {
-            messageHandler.handleMessage(ws, String(ws.data.id), message)
+            messageHandler.handleMessage(ws, message)
         },
 
         close(ws) {
-            messageHandler.handleDisconnect(String(ws.data.id))
+            messageHandler.handleDisconnect(ws)
         }
     })
 
@@ -43,6 +43,13 @@ const app: Elysia = new Elysia()
  */
 app.listen({
     hostname: Env.getHostname(),
-    port: Env.getPort()
+    port: Env.getPort(),
+
+    /*
+    tls: {
+        key: Bun.file("./certificate/localhost.key"),
+        cert: Bun.file("./certificate/localhost.crt"),
+    }
+    */
 })
 console.log(`🟢 moss running on ${app.server?.hostname}:${app.server?.port}`)
