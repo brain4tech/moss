@@ -9,6 +9,11 @@
 
 </div>
 
+## WARNING: This project is archived and deprecated
+This project originally served a research project for my uni. Since then I did not need it anymore and also found out, that it's architecture simply represents that of a proxy and therefore should be implemented differently. Take this project for inspiration, but don't use it anywhere.
+
+## Documentation
+
 *moss* (acronym for **M**any-to-**O**ne **S**ignaling **S**erver) is a small, WebSocket-based signaling server for [WebRTC](https://webrtc.org/). It behaves like a proxy from many clients to one central server/manager, based on unique ids per connection.
 
 It's ...
